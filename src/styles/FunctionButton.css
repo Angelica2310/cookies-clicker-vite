@@ -20,3 +20,9 @@
   display: flex;
   justify-content: space-around;
 }
+
+@media (max-width: 1000px) {
+  .game-button button {
+    font-size: 12px;
+  }
+}

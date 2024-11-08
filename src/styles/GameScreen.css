@@ -1,22 +1,21 @@
 .game-screen {
   position: relative;
-  color: black;
-  /* background-color: aquamarine; */
   max-width: 90vw;
   width: 100%;
   border: none;
   margin: 50px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.929);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   text-align: center;
   transition: transform 0.3s ease;
-  backdrop-filter: blur(20px);
-  border: 1px solid #1a7ab8;
+  backdrop-filter: blur(20px) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
 }
 
 .list-item {
   width: 150px;
-  height: 90px;
+  height: 100px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -26,6 +25,17 @@
   backdrop-filter: blur(4px);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.list-style {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  justify-content: space-evenly;
+  text-align: center;
+  gap: 30px;
+  font-size: 11px;
+  color: #1a7ab8;
+  margin-bottom: 30px;
 }
 
 .list-item:hover {
@@ -74,5 +84,41 @@
     text-shadow: 0 0 2px #896625, 0 0 5px #896625, 0 0 5px #896625,
       0 0 5px #896625, 0 0 2px #896625, 4px 4px 2px white;
     color: #1a7ab8;
+  }
+}
+
+@media (max-width: 1000px) {
+  .list-style {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .game-screen {
+    margin: 10px;
+  }
+  .list-style {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+  .popupMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px;
+    border: 2px solid white;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgb(255, 255, 255);
+    z-index: 1000;
+    background: white;
+    border-radius: 10px;
+    color: #1a7ab8;
+  }
+  .upgrade-title {
+    margin: 30px;
+    font-size: 30px;
+    animation: neon 1s ease infinite;
   }
 }

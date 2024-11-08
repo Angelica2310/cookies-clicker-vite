@@ -4,17 +4,18 @@ import CoinSound from "/CoinSound.mp3";
 import NotEnoughCookieSound from "/NotEnoughCookieSound.mp3";
 
 export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
-  const coinSound = () => {
+  function coinSound() {
     const coin = new Audio(CoinSound);
     coin.play();
-  };
-  const errorSound = () => {
+  }
+  function errorSound() {
     const error = new Audio(NotEnoughCookieSound);
     error.play();
-  };
+  }
 
   return (
     <div className="list-item">
+      <p style={{ color: "#896625" }}>Quantity: {item.owned || 0}</p>
       <h3>{item.name}</h3>
       <p>Cost: 🍪 {item.cost}</p>
       <p>Effect: +{item.increase}cps</p>
@@ -38,7 +39,7 @@ export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
               }
             }}
             style={{
-              opacity: cookies < item.cost ? 0.5 : 1,
+              backgroundColor: cookies < item.cost ? "lightgrey" : "#1a7ab8",
               pointerEvents: cookies < item.cost ? "none" : "auto",
             }}
           >

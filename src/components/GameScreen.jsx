@@ -14,6 +14,7 @@ import quantumImg from "../assets/quantum.png";
 import alienImg from "../assets/alien.png";
 import interdimensionalImg from "../assets/interdimensional.png";
 import BackgroundSound from "/BackgroundSound.mp3";
+import CookieClickSound from "/CookieClickSound.mp3";
 
 const icons = [
   clickerImg,
@@ -36,17 +37,6 @@ export default function GameScreen() {
     marginBottom: "-30px",
   };
 
-  const listStyle = {
-    display: "grid",
-    gridTemplateColumns: "auto auto auto auto auto",
-    justifyContent: "space-evenly",
-    textAlign: "center",
-    gap: "30px",
-    fontSize: "11px",
-    color: "#1A7AB8",
-    marginBottom: "30px",
-  };
-
   const hrStyle = {
     border: "0",
     width: "100%",
@@ -55,7 +45,6 @@ export default function GameScreen() {
   };
 
   // Fetch upgrade items from API
-  const [items, setItems] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -76,6 +65,17 @@ export default function GameScreen() {
     return Number(localStorage.getItem("cps")) || 1;
   });
 
+  function loadItems() {
+    try {
+      const storedItems = JSON.parse(localStorage.getItem("items"));
+      return Array.isArray(storedItems) ? storedItems : [];
+    } catch (error) {
+      console.log("Failed", error);
+      return [];
+    }
+  }
+  const [items, setItems] = useState(loadItems());
+
   // Set timer for auto cps increment
   useEffect(() => {
     const interval = setInterval(() => {
@@ -85,7 +85,7 @@ export default function GameScreen() {
     return () => clearInterval(interval);
   }, [cps]);
 
-  // Save cookies and cps to localStorage
+  // Save cookies and cps and countUpgrade to localStorage
   useEffect(() => {
     localStorage.setItem("cookies", cookies);
   }, [cookies]);
@@ -94,9 +94,19 @@ export default function GameScreen() {
     localStorage.setItem("cps", cps);
   }, [cps]);
 
+  useEffect(() => {
+    localStorage.setItem("items", JSON.stringify(items));
+  });
+
   // Function when click button, cookies increase
+  function playCookieSound() {
+    const cookieSound = new Audio(CookieClickSound);
+    cookieSound.play();
+  }
+
   function cookieClick() {
     setCookies(cookies + 1);
+    playCookieSound();
   }
 
   // Buy upgrade function
@@ -104,6 +114,19 @@ export default function GameScreen() {
     if (cookies >= item.cost) {
       setCookies(cookies - item.cost);
       setCps(cps + item.increase);
+
+      // Function when click buy upgrade, quantity counted
+      const tempItems = [...items]; // creates a new array tempItems by copying the values from the original items array
+      const tempUpgrade = tempItems.find(
+        // find the target item that macthes with specified id
+        (targetitem) => targetitem.id === item.id
+      );
+      tempUpgrade.owned = tempUpgrade.owned ? tempUpgrade.owned + 1 : 1; // update the 'owned' property of the found item
+
+      setItems(tempItems);
+      // console.log(tempItems);
+      // save the quantity to local storage
+      localStorage.setItem("items", JSON.stringify(tempItems));
     }
   }
 
@@ -121,14 +144,14 @@ export default function GameScreen() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(new Audio(BackgroundSound));
 
-  const toggleSound = () => {
+  function toggleSound() {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
-  };
+  }
 
   return (
     <div className="game-screen">
@@ -171,10 +194,12 @@ export default function GameScreen() {
       <br />
       <h2>{cps} cps</h2>
       <br />
+
       <DisplayCookies cookieClick={cookieClick} />
+
       <hr style={hrStyle} />
-      <h2 className="upgrade-title">Upgrade List</h2>
-      <div style={listStyle}>
+      <h2 className="upgrade-title">Upgrade List ⚡️ </h2>
+      <div className="list-style">
         {items.map((item, index) => (
           <UpgradeButton
             buyUpgrade={buyUpgrade}
