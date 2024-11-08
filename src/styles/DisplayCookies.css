@@ -1,0 +1,30 @@
+#cookies-btn {
+  margin-top: -25px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: jump-shaking 1.83s infinite;
+}
+
+@keyframes jump-shaking {
+  0% {
+    transform: translateX(0) rotate(0);
+  }
+  35% {
+    transform: translateY(0) rotate(0);
+  }
+  85% {
+    transform: translateY(0) rotate(0);
+  }
+  89% {
+    transform: translateY(-2px) rotate(-17deg);
+  }
+  93% {
+    transform: translateY(-3px) rotate(17deg);
+  }
+  98% {
+    transform: translateY(-4px) rotate(-17deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+}

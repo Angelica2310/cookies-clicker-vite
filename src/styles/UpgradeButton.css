@@ -1,0 +1,31 @@
+button {
+  color: white;
+  border: 1px solid white;
+  background-color: #1a7ab8;
+  border-radius: 3px;
+  font-size: 10px;
+  width: 30px;
+  cursor: pointer;
+  margin-top: 5px;
+  height: 15px;
+}
+
+button:hover {
+  background-color: #896625;
+  border: 1px solid white;
+  color: white;
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.icon-button {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
