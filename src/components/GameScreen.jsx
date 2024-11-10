@@ -32,7 +32,7 @@ const icons = [
 export default function GameScreen() {
   const numberStyle = {
     fontSize: "70px",
-    color: "#1A7AB8",
+    color: "white",
     marginTop: "0",
     marginBottom: "-30px",
   };

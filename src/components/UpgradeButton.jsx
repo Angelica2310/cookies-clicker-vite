@@ -15,7 +15,7 @@ export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
 
   return (
     <div className="list-item">
-      <p style={{ color: "#896625" }}>Quantity: {item.owned || 0}</p>
+      <p style={{ color: "red" }}>Quantity: {item.owned || 0}</p>
       <h3>{item.name}</h3>
       <p>Cost: 🍪 {item.cost}</p>
       <p>Effect: +{item.increase}cps</p>
