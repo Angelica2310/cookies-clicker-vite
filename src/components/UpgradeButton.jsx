@@ -39,7 +39,7 @@ export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
               }
             }}
             style={{
-              backgroundColor: cookies < item.cost ? "lightgrey" : "#1a7ab8",
+              backgroundColor: cookies < item.cost ? "lightgrey" : "#365411",
               pointerEvents: cookies < item.cost ? "none" : "auto",
             }}
           >

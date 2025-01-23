@@ -54,7 +54,7 @@
   z-index: 1000;
   background: white;
   border-radius: 10px;
-  color: #1a7ab8;
+  color: #365411;
 }
 
 .overlay {
@@ -76,14 +76,14 @@
 @keyframes neon {
   0%,
   100% {
-    text-shadow: 0 0 10px #1a7ab8, 0 0 20px #1a7ab8, 0 0 20px #1a7ab8,
-      0 0 20px #1a7ab8, 0 0 2px #fed128, 2px 2px 2px #806914;
+    text-shadow: 0 0 10px #365411, 0 0 20px #365411, 0 0 20px #365411,
+      0 0 20px #365411, 0 0 2px #fed128, 2px 2px 2px #806914;
     color: #f5efcb;
   }
   50% {
     text-shadow: 0 0 2px #896625, 0 0 5px #896625, 0 0 5px #896625,
       0 0 5px #896625, 0 0 2px #896625, 4px 4px 2px white;
-    color: #1a7ab8;
+    color: #365411;
   }
 }
 
@@ -114,7 +114,7 @@
     z-index: 1000;
     background: white;
     border-radius: 10px;
-    color: #1a7ab8;
+    color: #365411;
   }
   .upgrade-title {
     margin: 30px;

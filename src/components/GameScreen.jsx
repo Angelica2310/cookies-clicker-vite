@@ -32,7 +32,7 @@ const icons = [
 export default function GameScreen() {
   const numberStyle = {
     fontSize: "70px",
-    color: "white",
+    color: "red",
     marginTop: "0",
     marginBottom: "-30px",
   };
@@ -59,7 +59,7 @@ export default function GameScreen() {
 
   // Load saved values from localStorage
   const [cookies, setCookies] = useState(() => {
-    return Number(localStorage.getItem("cookies")) || 0;
+    return Number(localStorage.getItem("cookies")) || 100;
   });
   const [cps, setCps] = useState(() => {
     return Number(localStorage.getItem("cps")) || 1;
@@ -116,10 +116,10 @@ export default function GameScreen() {
       setCps(cps + item.increase);
 
       // Function when click buy upgrade, quantity counted
-      const tempItems = [...items]; // creates a new array tempItems by copying the values from the original items array
+      const tempItems = [...items]; // creates a new array tempItems by copying the values from the original items array using spread operator
       const tempUpgrade = tempItems.find(
-        // find the target item that macthes with specified id
-        (targetitem) => targetitem.id === item.id
+        // find the target item that matches with specified id
+        (targetItem) => targetItem.id === item.id
       );
       tempUpgrade.owned = tempUpgrade.owned ? tempUpgrade.owned + 1 : 1; // update the 'owned' property of the found item
 
@@ -132,7 +132,7 @@ export default function GameScreen() {
 
   // Reset the game function
   function resetGame() {
-    setCookies(0);
+    setCookies(100);
     setCps(1);
     localStorage.clear();
   }
