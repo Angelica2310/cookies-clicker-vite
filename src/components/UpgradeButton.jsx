@@ -3,7 +3,12 @@ import Icon from "./Icon";
 import CoinSound from "/CoinSound.mp3";
 import NotEnoughCookieSound from "/NotEnoughCookieSound.mp3";
 
-export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
+export default function UpgradeButton({
+  buyUpgrade,
+  upgrade,
+  iconSrc,
+  cookies,
+}) {
   function coinSound() {
     const coin = new Audio(CoinSound);
     coin.play();
@@ -15,32 +20,32 @@ export default function UpgradeButton({ buyUpgrade, item, iconSrc, cookies }) {
 
   return (
     <div className="list-item">
-      <p style={{ color: "red" }}>Quantity: {item.owned || 0}</p>
-      <h3>{item.name}</h3>
-      <p>Cost: 🍪 {item.cost}</p>
-      <p>Effect: +{item.increase}cps</p>
+      <p style={{ color: "red" }}>Quantity: {upgrade.owned || 0}</p>
+      <h3>{upgrade.name}</h3>
+      <p>Cost: 🍪 {upgrade.cost}</p>
+      <p>Effect: +{upgrade.increase}cps</p>
       <div className="icon-button">
-        <Icon src={iconSrc} alt={`${item.name} icon`} />
+        <Icon src={iconSrc} alt={`${upgrade.name} icon`} />
         <div
           onClick={() => {
-            if (cookies < item.cost) {
+            if (cookies < upgrade.cost) {
               errorSound();
             }
           }}
           style={{
-            cursor: cookies < item.cost ? "not-allowed" : "pointer",
+            cursor: cookies < upgrade.cost ? "not-allowed" : "pointer",
           }}
         >
           <button
             onClick={() => {
-              if (cookies >= item.cost) {
+              if (cookies >= upgrade.cost) {
                 coinSound();
-                buyUpgrade(item);
+                buyUpgrade(upgrade);
               }
             }}
             style={{
-              backgroundColor: cookies < item.cost ? "lightgrey" : "#365411",
-              pointerEvents: cookies < item.cost ? "none" : "auto",
+              backgroundColor: cookies < upgrade.cost ? "lightgrey" : "#365411",
+              pointerEvents: cookies < upgrade.cost ? "none" : "auto",
             }}
           >
             buy

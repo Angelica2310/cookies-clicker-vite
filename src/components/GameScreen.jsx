@@ -52,7 +52,7 @@ export default function GameScreen() {
         "https://cookie-upgrade-api.vercel.app/api/upgrades"
       );
       const data = await response.json();
-      setItems(data);
+      setUpgrades(data);
     }
     fetchData();
   }, []);
@@ -67,14 +67,15 @@ export default function GameScreen() {
 
   function loadItems() {
     try {
-      const storedItems = JSON.parse(localStorage.getItem("items"));
+      const storedItems = JSON.parse(localStorage.getItem("upgrades"));
       return Array.isArray(storedItems) ? storedItems : [];
     } catch (error) {
       console.log("Failed", error);
       return [];
     }
   }
-  const [items, setItems] = useState(loadItems());
+
+  const [upgrades, setUpgrades] = useState(loadItems());
 
   // Set timer for auto cps increment
   useEffect(() => {
@@ -95,7 +96,7 @@ export default function GameScreen() {
   }, [cps]);
 
   useEffect(() => {
-    localStorage.setItem("items", JSON.stringify(items));
+    localStorage.setItem("upgrades", JSON.stringify(upgrades));
   });
 
   // Function when click button, cookies increase
@@ -110,24 +111,41 @@ export default function GameScreen() {
   }
 
   // Buy upgrade function
-  function buyUpgrade(item) {
-    if (cookies >= item.cost) {
-      setCookies(cookies - item.cost);
-      setCps(cps + item.increase);
+  function buyUpgrade(upgrade) {
+    if (cookies >= upgrade.cost) {
+      setCookies(cookies - upgrade.cost);
+      setCps(cps + upgrade.increase);
+
+      // check if the upgrade has saved in local storage
+      const savedUpgrade = upgrades.find((u) => u.id === upgrade.id);
+      console.log("savedUpgrade", savedUpgrade);
+      upgrade.quantity = savedUpgrade ? savedUpgrade.quantity : 0;
+
+      console.log("upgrade", upgrade);
 
       // Function when click buy upgrade, quantity counted
-      const tempItems = [...items]; // creates a new array tempItems by copying the values from the original items array using spread operator
+      const tempItems = [...upgrades]; // creates a new array tempItems by copying the values from the original upgrades array using spread operator
       const tempUpgrade = tempItems.find(
-        // find the target item that matches with specified id
-        (targetItem) => targetItem.id === item.id
+        // find the target upgrade that matches with specified id
+        (targetItem) => targetItem.id === upgrade.id
       );
-      tempUpgrade.owned = tempUpgrade.owned ? tempUpgrade.owned + 1 : 1; // update the 'owned' property of the found item
+      tempUpgrade.owned = tempUpgrade.owned ? tempUpgrade.owned + 1 : 1; // update the 'owned' property of the found upgrade
 
-      setItems(tempItems);
+      setUpgrades(tempItems);
       // console.log(tempItems);
+
+      // Update the upgrades array with the new tempItems array and save to local storage
+      const existingItemsIndex = upgrade.findIndex((i) => i.id === upgrade.id);
+      if (existingItemsIndex !== -1) {
+        upgrades[existingItemsIndex].quantity = upgrade.quantity;
+      } else {
+        upgrades.push({ ...upgrade });
+      }
+
       // save the quantity to local storage
-      localStorage.setItem("items", JSON.stringify(tempItems));
+      localStorage.setItem("clickedItem", JSON.stringify(upgrade));
     }
+    console.log(upgrade.owned);
   }
 
   // Reset the game function
@@ -200,11 +218,11 @@ export default function GameScreen() {
       <hr style={hrStyle} />
       <h2 className="upgrade-title">Upgrade List ⚡️ </h2>
       <div className="list-style">
-        {items.map((item, index) => (
+        {upgrades.map((upgrade, index) => (
           <UpgradeButton
             buyUpgrade={buyUpgrade}
-            item={item}
-            key={item.id}
+            upgrade={upgrade}
+            key={upgrade.id}
             iconSrc={icons[index]}
             cookies={cookies}
           />
