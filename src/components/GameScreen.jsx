@@ -115,13 +115,14 @@ export default function GameScreen() {
     if (cookies >= upgrade.cost) {
       setCookies(cookies - upgrade.cost);
       setCps(cps + upgrade.increase);
-
+      
       // check if the upgrade has saved in local storage
       const savedUpgrade = upgrades.find((u) => u.id === upgrade.id);
+      // console.log("upgrades", upgrades);
       console.log("savedUpgrade", savedUpgrade);
-      upgrade.quantity = savedUpgrade ? savedUpgrade.quantity : 0;
 
-      console.log("upgrade", upgrade);
+      upgrade.quantity = savedUpgrade ? savedUpgrade.quantity : 0;
+      console.log("upgrade",upgrade)
 
       // Function when click buy upgrade, quantity counted
       const tempItems = [...upgrades]; // creates a new array tempItems by copying the values from the original upgrades array using spread operator
@@ -129,23 +130,25 @@ export default function GameScreen() {
         // find the target upgrade that matches with specified id
         (targetItem) => targetItem.id === upgrade.id
       );
-      tempUpgrade.owned = tempUpgrade.owned ? tempUpgrade.owned + 1 : 1; // update the 'owned' property of the found upgrade
-
+      tempUpgrade.quantity = tempUpgrade.quantity ? tempUpgrade.quantity + 1 : 1; // update the 'quantity' property of the found upgrade
+      
       setUpgrades(tempItems);
-      // console.log(tempItems);
+      console.log("tempItems",tempItems);
+      console.log("tempUpgrade",tempUpgrade);
+      
 
       // Update the upgrades array with the new tempItems array and save to local storage
-      const existingItemsIndex = upgrade.findIndex((i) => i.id === upgrade.id);
+      const existingItemsIndex = upgrades.findIndex((i) => i.id === upgrade.id);
       if (existingItemsIndex !== -1) {
         upgrades[existingItemsIndex].quantity = upgrade.quantity;
       } else {
-        upgrades.push({ ...upgrade });
+        upgrades.push({ ...upgrades });
       }
 
       // save the quantity to local storage
-      localStorage.setItem("clickedItem", JSON.stringify(upgrade));
+      localStorage.setItem("upgrades", JSON.stringify(upgrades));
     }
-    console.log(upgrade.owned);
+    // console.log(upgrade.quantity);
   }
 
   // Reset the game function

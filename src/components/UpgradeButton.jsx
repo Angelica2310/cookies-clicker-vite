@@ -20,7 +20,7 @@ export default function UpgradeButton({
 
   return (
     <div className="list-item">
-      <p style={{ color: "red" }}>Quantity: {upgrade.owned || 0}</p>
+      <p style={{ color: "red" }}>Quantity: {upgrade.quantity || 0}</p>
       <h3>{upgrade.name}</h3>
       <p>Cost: 🍪 {upgrade.cost}</p>
       <p>Effect: +{upgrade.increase}cps</p>
