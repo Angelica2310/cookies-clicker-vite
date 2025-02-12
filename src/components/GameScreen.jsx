@@ -44,119 +44,9 @@ export default function GameScreen() {
     height: "1px",
   };
 
-  // Fetch upgrade items from API
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch(
-        "https://cookie-upgrade-api.vercel.app/api/upgrades"
-      );
-      const data = await response.json();
-      setUpgrades(data);
-    }
-    fetchData();
-  }, []);
-
-  // Load saved values from localStorage
-  const [cookies, setCookies] = useState(() => {
-    return Number(localStorage.getItem("cookies")) || 100;
-  });
-  const [cps, setCps] = useState(() => {
-    return Number(localStorage.getItem("cps")) || 1;
-  });
-
-  function loadItems() {
-    try {
-      const storedItems = JSON.parse(localStorage.getItem("upgrades"));
-      return Array.isArray(storedItems) ? storedItems : [];
-    } catch (error) {
-      console.log("Failed", error);
-      return [];
-    }
-  }
-
-  const [upgrades, setUpgrades] = useState(loadItems());
-
-  // Set timer for auto cps increment
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCookies((current) => current + cps);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [cps]);
-
-  // Save cookies and cps and countUpgrade to localStorage
-  useEffect(() => {
-    localStorage.setItem("cookies", cookies);
-  }, [cookies]);
-
-  useEffect(() => {
-    localStorage.setItem("cps", cps);
-  }, [cps]);
-
-  useEffect(() => {
-    localStorage.setItem("upgrades", JSON.stringify(upgrades));
-  });
-
-  // Function when click button, cookies increase
-  function playCookieSound() {
-    const cookieSound = new Audio(CookieClickSound);
-    cookieSound.play();
-  }
-
-  function cookieClick() {
-    setCookies(cookies + 1);
-    playCookieSound();
-  }
-
-  // Buy upgrade function
-  function buyUpgrade(upgrade) {
-    if (cookies >= upgrade.cost) {
-      setCookies(cookies - upgrade.cost);
-      setCps(cps + upgrade.increase);
-      
-      // check if the upgrade has saved in local storage
-      const savedUpgrade = upgrades.find((u) => u.id === upgrade.id);
-      // console.log("upgrades", upgrades);
-      console.log("savedUpgrade", savedUpgrade);
-
-      upgrade.quantity = savedUpgrade ? savedUpgrade.quantity : 0;
-      console.log("upgrade",upgrade)
-
-      // Function when click buy upgrade, quantity counted
-      const tempItems = [...upgrades]; // creates a new array tempItems by copying the values from the original upgrades array using spread operator
-      const tempUpgrade = tempItems.find(
-        // find the target upgrade that matches with specified id
-        (targetItem) => targetItem.id === upgrade.id
-      );
-      tempUpgrade.quantity = tempUpgrade.quantity ? tempUpgrade.quantity + 1 : 1; // update the 'quantity' property of the found upgrade
-      
-      setUpgrades(tempItems);
-      console.log("tempItems",tempItems);
-      console.log("tempUpgrade",tempUpgrade);
-      
-
-      // Update the upgrades array with the new tempItems array and save to local storage
-      const existingItemsIndex = upgrades.findIndex((i) => i.id === upgrade.id);
-      if (existingItemsIndex !== -1) {
-        upgrades[existingItemsIndex].quantity = upgrade.quantity;
-      } else {
-        upgrades.push({ ...upgrades });
-      }
-
-      // save the quantity to local storage
-      localStorage.setItem("upgrades", JSON.stringify(upgrades));
-    }
-    // console.log(upgrade.quantity);
-  }
-
-  // Reset the game function
-  function resetGame() {
-    setCookies(100);
-    setCps(1);
-    localStorage.clear();
-  }
+  let [state, setState] = useState(null);
+  // console.log("state", state);
+  const [displayCookies, setDisplayCookies] = useState(0);
 
   // Show How To Play message
   const [show, setShow] = useState(false);
@@ -172,6 +62,99 @@ export default function GameScreen() {
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
+  }
+
+  // get items from local storage
+  useEffect(() => {
+    const savedState = JSON.parse(localStorage.getItem("state"));
+    if (savedState) {
+      setState(savedState);
+    } else {
+      setState({
+        cookies: 100,
+        cps: 1,
+        purchasedItems: [],
+      });
+    }
+  }, []);
+
+  // add "state" to localstorage if there isn't one, use "state" as dependency, if state changes, run useEffect again
+  useEffect(() => {
+    if (state !== null) {
+      localStorage.setItem("state", JSON.stringify(state));
+    }
+  }, [state]);
+
+  // Fetch upgrade items from API
+  const [upgrades, setUpgrades] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(
+        "https://cookie-upgrade-api.vercel.app/api/upgrades"
+      );
+      const data = await response.json();
+      setUpgrades(data);
+    }
+    fetchData();
+  }, []);
+
+  // Set timer for auto cps increment
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // update state using setState, using a function
+      setState((currentState) => ({
+        ...currentState,
+        cookies: currentState.cookies + currentState.cps,
+      }));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [state?.cps]); //ensure the effect rerun if state.cps changes
+
+  // Play sound when clicking cookie + increase cookie count
+  function playCookieSound() {
+    const cookieSound = new Audio(CookieClickSound);
+    cookieSound.play();
+  }
+
+  function cookieClick() {
+    setState((prevState) => ({
+      ...prevState,
+      cookies: prevState.cookies + 1,
+    }));
+    playCookieSound();
+  }
+
+  // function set for the display cookies run smoothly
+  useEffect(() => {
+    if (state !== null) {
+      const displayInterval = setInterval(() => {
+        setDisplayCookies(
+          (currentDisplayCookies) => currentDisplayCookies + state.cps / 10 // ensure displayCookie increase smoothly over time rather than a big jumps
+        );
+      }, 100);
+      return () => clearInterval(displayInterval);
+    }
+  }, [state?.cps]); // when state.cps changes, it clears the prev interval and starts a new one
+
+  useEffect(() => {
+    if (state !== null) {
+      setDisplayCookies(state.cookies);
+    }
+  }, [state?.cookies]);
+
+  if (state === null) {
+    return <div>calculating cookies...</div>;
+  }
+
+  // Reset game
+  function resetGame() {
+    setState({
+      cookies: 100,
+      cps: 1,
+      purchasedItems: [],
+    });
+    localStorage.clear();
   }
 
   return (
@@ -210,10 +193,10 @@ export default function GameScreen() {
       </div>
 
       <p style={numberStyle} id="cookies">
-        {cookies}
+        {Math.floor(displayCookies)}
       </p>
       <br />
-      <h2>{cps} cps</h2>
+      <h2>{state.cps} cps</h2>
       <br />
 
       <DisplayCookies cookieClick={cookieClick} />
@@ -223,11 +206,11 @@ export default function GameScreen() {
       <div className="list-style">
         {upgrades.map((upgrade, index) => (
           <UpgradeButton
-            buyUpgrade={buyUpgrade}
             upgrade={upgrade}
             key={upgrade.id}
             iconSrc={icons[index]}
-            cookies={cookies}
+            state={state}
+            setState={setState}
           />
         ))}
       </div>
